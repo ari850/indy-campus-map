@@ -4,15 +4,117 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Indy Campus Map</title>
 
-<img src="Indy_Campus_Map.png" usemap="#image-map" style="max-width:100%;height:auto;display:block;">
+<style>
+  body { margin:0; font-family: system-ui, Arial, sans-serif; }
+  /* Map image */
+  #campus { max-width:100%; height:auto; display:block; }
 
+  /* Lightbox overlay */
+  #lightbox {
+    position:fixed; inset:0; display:none; place-items:center;
+    background:rgba(0,0,0,.6); z-index:9999; padding:24px;
+  }
+  #lightbox[aria-hidden="false"] { display:grid; }
+
+  .lb-card {
+    background:#fff; border-radius:14px; max-width:min(900px, 92vw);
+    width:fit-content; max-height:82vh; overflow:auto; box-shadow:0 10px 30px rgba(0,0,0,.3);
+  }
+  .lb-head { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid #eee; }
+  .lb-head h2 { margin:0; font-size:16px; font-weight:600; }
+  .lb-close { border:0; background:transparent; font-size:22px; line-height:1; cursor:pointer; padding:4px 8px; }
+  .lb-body { padding:10px 14px 16px; }
+  .lb-body img { max-width:100%; height:auto; display:block; border-radius:10px; }
+  .lb-cap { margin:10px 2px 2px; color:#444; font-size:14px; }
+</style>
+
+<!-- MAP IMAGE -->
+<img id="campus" src="Indy_Campus_Map.png" usemap="#image-map" alt="Purdue Indianapolis map">
+
+<!-- CLICKABLE AREAS -->
 <map name="image-map">
-  <!-- Use 4 numbers for a rectangle: x1,y1,x2,y2 -->
-  <area target="_top"
-        alt="LUX on Capitol"
-        title="LUX on Capitol"
-        href="LUX_pic.jpg"
-        shape="rect"
-        coords="4620,1210,4760,1350">
+  <!-- EXAMPLE: LUX on Capitol -->
+  <area
+    shape="rect"
+    coords="4620,1210,4760,1350"  <!-- x1,y1,x2,y2 from your generator -->
+    alt="LUX on Capitol"
+    title="LUX on Capitol"
+    href="#"
+    data-img="LUX_pic.jpg"
+    data-caption="LUX on Capitol — residence hall & apartments on North St."
+  >
+  <!-- Duplicate the <area> above for more buildings; change coords, title, data-img, data-caption -->
 </map>
+
+<!-- LIGHTBOX (popup) -->
+<div id="lightbox" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="lb-card">
+    <div class="lb-head">
+      <h2 id="lb-title">Title</h2>
+      <button class="lb-close" aria-label="Close">×</button>
+    </div>
+    <div class="lb-body">
+      <img id="lb-img" alt="">
+      <p id="lb-cap" class="lb-cap"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- Responsive image-map: scale <area> coords to the rendered image size ---
+  (function () {
+    const img = document.getElementById('campus');
+    const map = document.querySelector('map[name="' + img.useMap.replace('#','') + '"]');
+    const areas = Array.from(map.querySelectorAll('area'));
+
+    function scaleAreas() {
+      const w = img.naturalWidth || img.width;
+      const scale = img.clientWidth / w;
+      areas.forEach(a => {
+        if (!a.dataset.originalCoords) a.dataset.originalCoords = a.coords;
+        const scaled = a.dataset.originalCoords.split(',').map(Number).map(v => Math.round(v * scale));
+        a.coords = scaled.join(',');
+      });
+    }
+    if (img.complete) scaleAreas(); else img.addEventListener('load', scaleAreas);
+    window.addEventListener('resize', scaleAreas);
+  })();
+
+  // --- Tiny lightbox for <area data-img="..."> ---
+  (function () {
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbTitle = document.getElementById('lb-title');
+    const lbCap = document.getElementById('lb-cap');
+    const closeBtn = document.querySelector('.lb-close');
+
+    function openLB(src, title, cap) {
+      lbImg.src = src;
+      lbImg.alt = title || '';
+      lbTitle.textContent = title || '';
+      lbCap.textContent = cap || '';
+      lb.setAttribute('aria-hidden', 'false');
+      // prevent background scroll
+      document.documentElement.style.overflow = 'hidden';
+    }
+    function closeLB() {
+      lb.setAttribute('aria-hidden', 'true');
+      lbImg.src = '';
+      document.documentElement.style.overflow = '';
+    }
+
+    // Open when clicking any <area data-img>
+    document.addEventListener('click', function (e) {
+      const a = e.target.closest('area[data-img]');
+      if (!a) return;
+      e.preventDefault();
+      openLB(a.dataset.img, a.title || a.alt, a.dataset.caption || '');
+    });
+
+    // Close interactions
+    closeBtn.addEventListener('click', closeLB);
+    lb.addEventListener('click', e => { if (e.target === lb) closeLB(); }); // click backdrop
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
+  })();
+</script>
 </html>
