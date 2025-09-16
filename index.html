@@ -1,77 +1,172 @@
 <!doctype html>
 <html lang="en">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Indy Campus Map</title>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Indy Campus Map</title>
+  <style>
+    body { margin:0; font-family: system-ui, Arial, sans-serif; }
+    #campus { max-width:100%; height:auto; display:block; }
+    area { cursor:pointer; }
+    #lightbox { position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,.6); z-index:9999; padding:24px; }
+    #lightbox[aria-hidden="false"] { display:grid; }
+    .lb-card { background:#fff; border-radius:14px; max-width:min(900px,92vw); width:fit-content; max-height:82vh; overflow:auto; box-shadow:0 10px 30px rgba(0,0,0,.3); }
+    .lb-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #eee}
+    .lb-head h2{margin:0;font-size:16px;font-weight:600}
+    .lb-close{border:0;background:transparent;font-size:22px;line-height:1;cursor:pointer;padding:4px 8px}
+    .lb-body{padding:10px 14px 16px}
+    .lb-body img{max-width:100%;height:auto;display:block;border-radius:10px}
+    .lb-cap{margin:10px 2px 2px;color:#444;font-size:14px}
+    .lb-error{margin:10px 2px;color:#b00020;font-size:14px;display:none}
+  </style>
+</head>
+<body>
 
-<style>
-  body { margin:0; font-family: system-ui, Arial, sans-serif; }
-  #campus { max-width:100%; height:auto; display:block; }
-  #lightbox { position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,.6); z-index:9999; padding:24px; }
-  #lightbox[aria-hidden="false"] { display:grid; }
-  .lb-card { background:#fff; border-radius:14px; max-width:min(900px,92vw); width:fit-content; max-height:82vh; overflow:auto; box-shadow:0 10px 30px rgba(0,0,0,.3); }
-  .lb-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #eee}
-  .lb-head h2{margin:0;font-size:16px;font-weight:600}
-  .lb-close{border:0;background:transparent;font-size:22px;line-height:1;cursor:pointer;padding:4px 8px}
-  .lb-body{padding:10px 14px 16px}
-  .lb-body img{max-width:100%;height:auto;display:block;border-radius:10px}
-  .lb-cap{margin:10px 2px 2px;color:#444;font-size:14px}
-</style>
-
-<img id="campus" src="Indy_Campus_Map.png" usemap="#image-map" alt="Purdue Indianapolis map">
+<img id="campus" src="Indy_Campus_Map.png" usemap="#image-map" alt="Purdue Indianapolis map" decoding="async" />
 
 <map name="image-map">
-  <!-- LUX on Capitol (edit coords + filenames) -->
-  <area
-    shape="rect"
+  <!-- Keep your LUX rectangle (already 4-number coords) -->
+  <area shape="rect"
     coords="4620,1210,4760,1350"
     alt="LUX on Capitol"
     title="LUX on Capitol"
     href="#"
     data-img="LUX_pic.jpg"
-    data-caption="LUX on Capitol — residence hall & apartments on North St.">
+    data-caption="LUX on Capitol — residence hall &amp; apartments on North St.">
+
+  <!-- Image Map Generator points (x,y). We'll auto-convert these to circles in JS. -->
+  <area shape="rect" coords="3664,1318"
+        alt="Student Center" title="Student Center" href="#"
+        data-img="SC.jpg" data-caption="Student Center">
+  <area shape="rect" coords="3330,1350"
+        alt="Academic Success Building" title="Academic Success Building" href="#"
+        data-img="ASB.jpg" data-caption="Academic Success Building">
+  <area shape="rect" coords="3346,1556"
+        alt="Informatics &amp; Communications Technology Complex" title="Informatics &amp; Communications Technology Complex" href="#"
+        data-img="IT.jpg" data-caption="Informatics &amp; Communications Technology Complex">
+  <area shape="rect" coords="3102,1528"
+        alt="Innovation Hall" title="Innovation Hall" href="#"
+        data-img="IO.jpg" data-caption="Innovation Hall">
+  <area shape="rect" coords="3102,1894"
+        alt="Purdue Campus Connect Shuttle" title="Purdue Campus Connect Shuttle" href="#"
+        data-img="bus.jpg" data-caption="Purdue Campus Connect Shuttle">
+  <area shape="rect" coords="3404,1066"
+        alt="STT" title="STT" href="#"
+        data-img="STT.jpg" data-caption="STT">
+  <area shape="rect" coords="2789,1512"
+        alt="Engineering Science &amp; Technology Building" title="Engineering Science &amp; Technology Building" href="#"
+        data-img="SL_LD.jpg" data-caption="Engineering Science &amp; Technology Building">
+  <area shape="rect" coords="2832,1685"
+        alt="Science Building" title="Science Building" href="#"
+        data-img="SL_LD.jpg" data-caption="Science Building">
+  <area shape="rect" coords="2821,1889"
+        alt="Science &amp; Engineering Laboratory Building" title="Science &amp; Engineering Laboratory Building" href="#"
+        data-img="EL.jpg" data-caption="Science &amp; Engineering Laboratory Building">
+  <area shape="rect" coords="2545,1755"
+        alt="University Library" title="University Library" href="#"
+        data-img="Library.jpg" data-caption="University Library">
+  <area shape="rect" coords="2487,1525"
+        alt="Engineering Technology Building" title="Engineering Technology Building" href="#"
+        data-img="ET_bldg.jpg" data-caption="Engineering Technology Building">
+  <area shape="rect" coords="2487,951"
+        alt="North Hall" title="North Hall" href="#"
+        data-img="North_Hall.jpg" data-caption="North Hall">
+  <area shape="rect" coords="2227,1223"
+        alt="Hine Hall" title="Hine Hall" href="#"
+        data-img="Hine_Hall.jpg" data-caption="Hine Hall">
+  <area shape="rect" coords="2201,1729"
+        alt="Taylor Hall" title="Taylor Hall" href="#"
+        data-img="Taylor_hall.jpg" data-caption="Taylor Hall">
+  <area shape="rect" coords="2158,1995"
+        alt="Education Social Work Building" title="Education Social Work Building" href="#"
+        data-img="ES.png" data-caption="Education Social Work Building">
+  <area shape="rect" coords="1984,1810"
+        alt="Lecture Hall" title="Lecture Hall" href="#"
+        data-img="Lecture_hall.jpg" data-caption="Lecture Hall">
+  <area shape="rect" coords="1994,1593"
+        alt="Cavanaugh Hall" title="Cavanaugh Hall" href="#"
+        data-img="Cavanaugh_hall.jpg" data-caption="Cavanaugh Hall">
+  <area shape="rect" coords="1787,1539"
+        alt="Campus Center" title="Campus Center" href="#"
+        data-img="Campus_center.jpg" data-caption="Campus Center">
 </map>
 
 <div id="lightbox" aria-hidden="true" role="dialog" aria-modal="true">
-  <div class="lb-card">
+  <div class="lb-card" role="document">
     <div class="lb-head">
       <h2 id="lb-title">Title</h2>
       <button class="lb-close" aria-label="Close">×</button>
     </div>
     <div class="lb-body">
       <img id="lb-img" alt="">
+      <p id="lb-error" class="lb-error"></p>
       <p id="lb-cap" class="lb-cap"></p>
     </div>
   </div>
 </div>
 
 <script>
-  // Scale <area> coords to the rendered image size
   (function () {
+    const DEFAULT_RADIUS = 70; // px in the ORIGINAL image's coordinate space
+
     const img = document.getElementById('campus');
-    const map = document.querySelector('map[name="' + img.useMap.replace('#','') + '"]');
+    const mapName = img.useMap ? img.useMap.replace('#','') : '';
+    const map = document.querySelector('map[name="' + mapName + '"]');
+    if (!map) return;
     const areas = Array.from(map.querySelectorAll('area'));
-    function scaleAreas() {
-      const w = img.naturalWidth || img.width;
-      if (!w) return;
-      const scale = img.clientWidth / w;
+
+    // 1) Normalize areas:
+    //    - If coords has only 2 numbers (x,y), convert to circle x,y,r
+    function normalizeAreas() {
       areas.forEach(a => {
-        if (!a.dataset.originalCoords) a.dataset.originalCoords = a.coords;
+        const nums = (a.coords || '').split(',').map(n => Number(n.trim())).filter(n => !Number.isNaN(n));
+        if (nums.length === 2) {
+          const [x, y] = nums;
+          a.shape = 'circle';
+          a.coords = [x, y, DEFAULT_RADIUS].join(',');
+        }
+        // Save original for scaling
+        if (!a.dataset.originalCoords) {
+          a.dataset.originalCoords = a.coords;
+        }
+      });
+    }
+
+    // 2) Scale <area> coords to the rendered image size
+    function scaleAreas() {
+      const naturalW = img.naturalWidth || img.width;
+      if (!naturalW) return;
+      const scale = img.clientWidth / naturalW;
+      areas.forEach(a => {
         const scaled = a.dataset.originalCoords.split(',').map(Number).map(v => Math.round(v * scale));
         a.coords = scaled.join(',');
       });
     }
-    if (img.complete) scaleAreas(); else img.addEventListener('load', scaleAreas);
+
+    if (img.complete) {
+      normalizeAreas();
+      scaleAreas();
+    } else {
+      img.addEventListener('load', () => { normalizeAreas(); scaleAreas(); });
+    }
     window.addEventListener('resize', scaleAreas);
 
-    // Attach click handlers directly to each area
+    // 3) Lightbox wiring
     const lb = document.getElementById('lightbox');
     const lbImg = document.getElementById('lb-img');
     const lbTitle = document.getElementById('lb-title');
     const lbCap = document.getElementById('lb-cap');
+    const lbErr = document.getElementById('lb-error');
     const closeBtn = document.querySelector('.lb-close');
 
     function openLB(src, title, cap) {
+      lbErr.style.display = 'none';
+      lbErr.textContent = '';
+      lbImg.onerror = () => {
+        lbErr.textContent = 'Could not load image: ' + src;
+        lbErr.style.display = 'block';
+        console.error('Lightbox image failed to load:', src);
+      };
       lbImg.src = src;
       lbImg.alt = title || '';
       lbTitle.textContent = title || '';
@@ -98,4 +193,5 @@
     });
   })();
 </script>
+</body>
 </html>
